@@ -39,4 +39,13 @@ def test_values_initialized_from_postleitzahl():
     assert type(m.postleitzahl) is str
     assert m.postleitzahl is not ''
 
+@pytest.fixture
+def bezirk():
+    return Bezirk(6)
+
+def test_bezirk_is_correct(bezirk):
+    assert bezirk.number == 6
+    assert bezirk.name == "Mariahilf"
+    assert bezirk.postleitzahl == "1060"
+
 

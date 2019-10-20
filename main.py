@@ -1,5 +1,5 @@
-# import scrapy
-# import regex as re
+import scrapy
+import regex as re
 import logging
 
 logger = logging.Logger("main")
@@ -10,7 +10,6 @@ MY_NEARBY_BEZIRKS = set([3, 5, 15, 7])
 OTHER_BEZIRKS = set(list(range(1, 24))).difference(MY_BEZIRK, MY_NEARBY_BEZIRKS)
 
 class Bezirk:
-
     BEZIRK_LOOKUP = {
         1: "Mitte",
         2: "Leopoldstadt",
@@ -36,34 +35,31 @@ class Bezirk:
         22: "Donaustadt",
         23: "Liesing",
     }
-
-    BEZIRK_REGEX = \
-    """
-    (?i)((mitte|innere)( stadt)?)
-       (leopoldstadt)
-       (landstra.{1,2}e)
-       (wieden)
-       (margareten)
-       (mariahilf)
-       (neubau)
-       (josefstadt)
-       (alsergrund)
-       (favoriten)
-       (simmering)
-       (meidling)
-       (hietzing)
-       (penzing)
-       (f.{1,2}nfhaus)
-       (ottakring)
-       (hernals)
-       (w.{1,2}hring)
-       (d.{1,2}bling)
-       (brigittenau)
-       (floridsdorf)
-       (donaustadt)
-       (liesing)
-    """
-
+    BEZIRK_REGEX = [
+    "(?i)((mitte|innere)( stadt)?)",
+       "(?i)(leopoldstadt)",
+       "(?i)(landstra.{1,2}e)",
+       "(?i)(wieden)",
+       "(?i)(margareten)",
+       "(?i)(mariahilf)",
+       "(?i)(neubau)",
+       "(?i)(josefstadt)",
+       "(?i)(alsergrund)",
+       "(?i)(favoriten)",
+       "(?i)(simmering)",
+       "(?i)(meidling)",
+       "(?i)(hietzing)",
+       "(?i)(penzing)",
+       "(?i)(f.{1,2}nfhaus)",
+       "(?i)(ottakring)",
+       "(?i)(hernals)",
+       "(?i)(w.{1,2}hring)",
+       "(?i)(d.{1,2}bling)",
+       "(?i)(brigittenau)",
+       "(?i)(floridsdorf)",
+       "(?i)(donaustadt)",
+       "(?i)(liesing)",
+    ]
     def __init__(self, name=none, number=none, postleitzahl=none):
         if name is none and number is none and postleitzahl is none:
             raise nameerror("needs some identification!")
@@ -88,9 +84,10 @@ class Bezirk:
         self.neighbors = set()
 
     def get_number_from_name(self, name):
-
-        names = list(self.bezirk_lookup.values())
-        return names.index(name) + 1
+        for id, name_regex in enumerate(self.BEZIRK_REGEX):
+            if re.findall(name_regex, name):
+                self.number = id + 1
+                break
 
     def make_postleitzahl(self, number):
         return "1{!s:0>2}0".format(number)
@@ -114,7 +111,7 @@ class Bezirk:
         return collect
 
 
-class wiennetworkmanager:
+class WienNetworkManager:
     def __init__(self):
         self.wien = self.make_network()
 
@@ -124,7 +121,7 @@ class wiennetworkmanager:
 
 
 
-class pfarrscraper:
+class PfarrScraper:
     def __init__(self):
         self.site_address = "flohmark site"
         self.results = []
@@ -148,7 +145,7 @@ class pfarrscraper:
 
 
     def listing_is_pffarflohmarkt(self, listing):
-        if re.findall("[pp]farr", listing.title):
+        if re.findall("(?i)pfarr", listing.title):
             return true
         else:
             return false
@@ -166,7 +163,7 @@ class pfarrscraper:
         try:
             assert len(set(bezirks)) is 1
         except:
-            logging.debug("location error: listing {} had bad location data.".format(listing.index))
+            logging.debug("Location error: listing {} had bad location data.".format(listing.index))
 
     def get_address(self, listing):
         pass
@@ -187,5 +184,5 @@ class pfarrscraper:
 
 
 if __name__=="__main__":
-    mit = bezirk("mitte")
+    mit = Bezirk("mitte")
 
