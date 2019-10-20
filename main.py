@@ -7,61 +7,96 @@ logger.setLevel(logging.DEBUG)
 
 MY_BEZIRK = set([6])
 MY_NEARBY_BEZIRKS = set([3, 5, 15, 7])
-OTHER_BEZIRKS = set(list(range(1, 23))).difference(MY_BEZIRK, MY_NEARBY_BEZIRKS)
+OTHER_BEZIRKS = set(list(range(1, 24))).difference(MY_BEZIRK, MY_NEARBY_BEZIRKS)
 
 class Bezirk:
+
     BEZIRK_LOOKUP = {
         1: "Mitte",
-        2: "",
-        3: "",
-        4: "",
-        5: "",
+        2: "Leopoldstadt",
+        3: "Landstra.{1,2}e",
+        4: "Wieden",
+        5: "Margareten",
         6: "Mariahilf",
-        7: "",
-        8: "",
-        9: "",
+        7: "Neubau",
+        8: "Josefstadt",
+        9: "Alsergrund",
         10: "Favoriten",
         11: "Simmering",
-        12: "",
-        13: "",
-        14: "",
-        15: "",
-        16: "",
-        17: "",
-        18: "",
-        19: "",
-        20: "",
-        21: "",
-        22: "",
+        12: "Meidling",
+        13: "Hietzing",
+        14: "Penzing",
+        15: "F.{1,2}nfhaus",
+        16: "Ottakring",
+        17: "Hernals",
+        18: "W.{1,2}hring",
+        19: "D.{1,2}bling",
+        20: "Brigittenau",
+        21: "Floridsdorf",
+        22: "Donaustadt",
+        23: "Liesing",
     }
-    def __init__(self, name=None, number=None, postleitzahl=None):
-        if name is None and number is None and postleitzahl is None:
-            raise NameError("Needs some identification!")
-        elif name is not None:
+
+    BEZIRK_REGEX = \
+    """
+    (?i)((mitte|innere)( stadt)?)
+       (leopoldstadt)
+       (landstra.{1,2}e)
+       (wieden)
+       (margareten)
+       (mariahilf)
+       (neubau)
+       (josefstadt)
+       (alsergrund)
+       (favoriten)
+       (simmering)
+       (meidling)
+       (hietzing)
+       (penzing)
+       (f.{1,2}nfhaus)
+       (ottakring)
+       (hernals)
+       (w.{1,2}hring)
+       (d.{1,2}bling)
+       (brigittenau)
+       (floridsdorf)
+       (donaustadt)
+       (liesing)
+    """
+
+    def __init__(self, name=none, number=none, postleitzahl=none):
+        if name is none and number is none and postleitzahl is none:
+            raise nameerror("needs some identification!")
+        elif name is not none:
+            if name not in self.bezirk_lookup.values():
+                raise nameerror("doesnt exist, sorry")
             self.name = name
             self.number = self.get_number_from_name(name)
-            self.poztleitzahl = self.make_postleitzahl(self.number)
-        elif number is not None:
+            self.postleitzahl = self.make_postleitzahl(self.number)
+        elif number is not none:
+            if number not in range(1, 24):
+                raise nameerror("that bezirk doesnt exist!")
             self.name = self.get_name_from_number(number)
             self.number = number
-            self.poztleitzahl = self.make_postleitzahl(self.number)
-        elif postleitzahl is not None:
+            self.postleitzahl = self.make_postleitzahl(self.number)
+        elif postleitzahl is not none:
             self.number = self.extract_number_from_postleitzahl(postleitzahl)
+            if self.number not in range(1, 24):
+                raise nameerror("that bezirk doesn't exist!")
             self.name = self.get_name_from_number(self.number)
-            self.poztleitzahl = postleitzahl
-        else:
-            raise NameError("You fucked up, something got through!")
+            self.postleitzahl = postleitzahl
         self.neighbors = set()
 
     def get_number_from_name(self, name):
-        names = self.BEZIRK_LOOKUP.values()
+
+        names = list(self.bezirk_lookup.values())
         return names.index(name) + 1
 
     def make_postleitzahl(self, number):
         return "1{!s:0>2}0".format(number)
 
     def get_name_from_number(self, number):
-        return self.BEZIRK_LOOKUP[number]
+        return self.bezirk_lookup[number]
 
     def extract_number_from_postleitzahl(self, postleitzahl):
         return int(postleitzahl[1:3])
@@ -79,23 +114,24 @@ class Bezirk:
         return collect
 
 
-class WienNetworkManager:
+class wiennetworkmanager:
     def __init__(self):
         self.wien = self.make_network()
 
     def make_network(self):
-        pass
 
 
 
-class PfarrScraper:
+
+
+class pfarrscraper:
     def __init__(self):
         self.site_address = "flohmark site"
         self.results = []
 
     def xpath_extractor(self):
         """
-        Details for extracting the info from the website
+        details for extracting the info from the website
         """
         # return extraction
         pass
@@ -112,17 +148,17 @@ class PfarrScraper:
 
 
     def listing_is_pffarflohmarkt(self, listing):
-        if re.findall("[Pp]farr", listing.title):
-            return True
+        if re.findall("[pp]farr", listing.title):
+            return true
         else:
-            return False
+            return false
 
 
     def get_bezirk(self, listing):
         bezirks.append(re.findall("1[0-9]{2}0", listing.title))
         bezirks.append(re.findall("1[0-9]{2}0", listing.body))
-        bezirks.append(re.findall(BEZIRK_REGEX, listing.title))
-        bezirks.append(re.findall(BEZIRK_REGEX, listing.body))
+        bezirks.append(re.findall(bezirk_regex, listing.title))
+        bezirks.append(re.findall(bezirk_regex, listing.body))
         self.assert_single_bezirk()
         return set(bezirks)
 
@@ -130,7 +166,7 @@ class PfarrScraper:
         try:
             assert len(set(bezirks)) is 1
         except:
-            logging.debug("LOCATION ERROR: Listing {} had bad location data.".format(listing.index))
+            logging.debug("location error: listing {} had bad location data.".format(listing.index))
 
     def get_address(self, listing):
         pass
@@ -142,18 +178,14 @@ class PfarrScraper:
         class _(): pass
         ordered_results = _()
         for listing in self.results:
-            if listing.bezirk in MY_BEZIRK:
+            if listing.bezirk in my_bezirk:
                 ordered_results.my_markts.append(listing)
-            elif listing.bezirk in MY_NEARBY_BEZIRKS:
+            elif listing.bezirk in my_nearby_bezirks:
                 ordered_results.near_markts.append(listing)
-            elif listing.bezirk in OTHER_BEZIRKS:
+            elif listing.bezirk in other_bezirks:
                 ordered_results.other_markts.append(listing)
 
 
-BEZIRK_REGEX="""
-mitte
+if __name__=="__main__":
+    mit = bezirk("mitte")
 
-
-
-mariahilf
-"""
