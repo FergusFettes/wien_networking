@@ -1,12 +1,92 @@
-import scrapy
-import regex as re
+# import scrapy
+# import regex as re
 import logging
 
+logger = logging.Logger("main")
 logger.setLevel(logging.DEBUG)
 
 MY_BEZIRK = set([6])
 MY_NEARBY_BEZIRKS = set([3, 5, 15, 7])
 OTHER_BEZIRKS = set(list(range(1, 23))).difference(MY_BEZIRK, MY_NEARBY_BEZIRKS)
+
+class Bezirk:
+    BEZIRK_LOOKUP = {
+        1: "Mitte",
+        2: "",
+        3: "",
+        4: "",
+        5: "",
+        6: "Mariahilf",
+        7: "",
+        8: "",
+        9: "",
+        10: "Favoriten",
+        11: "Simmering",
+        12: "",
+        13: "",
+        14: "",
+        15: "",
+        16: "",
+        17: "",
+        18: "",
+        19: "",
+        20: "",
+        21: "",
+        22: "",
+    }
+    def __init__(self, name=None, number=None, postleitzahl=None):
+        if name is None and number is None and postleitzahl is None:
+            raise NameError("Needs some identification!")
+        elif name is not None:
+            self.name = name
+            self.number = self.get_number_from_name(name)
+            self.poztleitzahl = self.make_postleitzahl(self.number)
+        elif number is not None:
+            self.name = self.get_name_from_number(number)
+            self.number = number
+            self.poztleitzahl = self.make_postleitzahl(self.number)
+        elif postleitzahl is not None:
+            self.number = self.extract_number_from_postleitzahl(postleitzahl)
+            self.name = self.get_name_from_number(self.number)
+            self.poztleitzahl = postleitzahl
+        else:
+            raise NameError("You fucked up, something got through!")
+        self.neighbors = set()
+
+    def get_number_from_name(self, name):
+        names = self.BEZIRK_LOOKUP.values()
+        return names.index(name) + 1
+
+    def make_postleitzahl(self, number):
+        return "1{!s:0>2}0".format(number)
+
+    def get_name_from_number(self, number):
+        return self.BEZIRK_LOOKUP[number]
+
+    def extract_number_from_postleitzahl(self, postleitzahl):
+        return int(postleitzahl[1:3])
+
+    def connect_bezirks(self, bezirk):
+        self.neighbors.add(bezirk)
+
+    def get_bezirk_names(self, bezirks):
+        return [bezirk.name for bezirk in bezirks]
+
+    def get_next_neighbors(self):
+        collect = set()
+        for bezirk in self.neighbors:
+            collect = collect.union(bezirk.neighbors)
+        return collect
+
+
+class WienNetworkManager:
+    def __init__(self):
+        self.wien = self.make_network()
+
+    def make_network(self):
+        pass
+
+
 
 class PfarrScraper:
     def __init__(self):
@@ -70,30 +150,6 @@ class PfarrScraper:
                 ordered_results.other_markts.append(listing)
 
 
-BEZIRK_LOOKUP = {
-    1: "Mitte",
-    2: "",
-    3: "",
-    4: "",
-    5: "",
-    6: "Mariahilf",
-    7: "",
-    8: "",
-    9: "",
-    10: "Favoriten",
-    11: "Simmering",
-    12: "",
-    13: "",
-    14: "",
-    15: "",
-    16: "",
-    17: "",
-    18: "",
-    19: "",
-    20: "",
-    21: "",
-    22: "",
-}
 BEZIRK_REGEX="""
 mitte
 
