@@ -7,7 +7,7 @@ logger.setLevel(logging.DEBUG)
 
 MY_BEZIRK = set([6])
 MY_NEARBY_BEZIRKS = set([3, 5, 15, 7])
-OTHER_BEZIRKS = set(list(range(1, 24))).difference(MY_BEZIRK, MY_NEARBY_BEZIRKS)
+OTHER_BEZIRKS = set(list(range(1, 24))).difference(MY_BEZIRK.union(MY_NEARBY_BEZIRKS))
 
 
 class Bezirk:
@@ -184,4 +184,3 @@ class PfarrScraper:
 
 if __name__ == "__main__":
     mit = Bezirk("mitte")
-
