@@ -28,30 +28,28 @@ class FlohScraper(scrapy.Spider):
         for i in range(0, 121, 15)
     ]
 
-    base = "td:nth-child(1) div:nth-child(1)"
-
     even_titles = [
-        f"{base} div.terminBox:nth-child({i}) div.terminTitel:nth-child(2) > a:nth-child(1)::text"
+        f"td:nth-child(1) div:nth-child(1) div.terminBox:nth-child({i}) div.terminTitel:nth-child(2) > a:nth-child(1)::text"
                      for i in range(2, 17, 2)
     ]
     odd_titles = [
-        f"{base} div:nth-child({i}) div.terminTitel:nth-child(2) > a:nth-child(1)::text"
+        f"td:nth-child(1) div:nth-child(1) div:nth-child({i}) div.terminTitel:nth-child(2) > a:nth-child(1)::text"
                     for i in range(3, 17, 2)
     ]
     even_urls = [
-        f"{base} div.terminBox:nth-child({i}) div.terminTitel:nth-child(2) > a:nth-child(1)::href"
+        f"td:nth-child(1) div:nth-child(1) div.terminBox:nth-child({i}) div.terminTitel:nth-child(2) > a:nth-child(1)::href"
                      for i in range(2, 17, 2)
     ]
     odd_urls = [
-        f"{base} div:nth-child({i}) div.terminTitel:nth-child(2) > a:nth-child(1)::href"
+        f"td:nth-child(1) div:nth-child(1) div:nth-child({i}) div.terminTitel:nth-child(2) > a:nth-child(1)::href"
                     for i in range(3, 17, 2)
     ]
     even_text = [
-        f"{base} div.terminBox:nth-child({i})::text"
+        f"td:nth-child(1) div:nth-child(1) div.terminBox:nth-child({i})::text"
                   for i in range(2, 17, 2)
     ]
     odd_text = [
-        f"{base} div:nth-child({i})::text"
+        f"td:nth-child(1) div:nth-child(1) div:nth-child({i})::text"
         for i in range(3, 17, 2)
     ]
 
@@ -60,7 +58,6 @@ class FlohScraper(scrapy.Spider):
     urls = [*even_urls, *odd_urls]
 
     def parse(self, response):
-        for child in response.css("")
         for j, title in enumerate(self.titles):
             yield {
                 'title': response.css(title).extract(),
